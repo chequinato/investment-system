@@ -1,0 +1,57 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Compra {
+  id             Int        @id @default(autoincrement())
+  ticker         String
+  quantidade     Int
+  precoUnitario  Float
+  valorTotal     Float
+  dataCriacao    DateTime   @default(now())
+
+  pagamento      Pagamento?
+  userId         Int?
+  user           User?      @relation(fields: [userId], references: [id])
+}
+
+model Pagamento {
+  id            Int      @id @default(autoincrement())
+  valor         Float
+  status        StatusPagamento
+  dataExecucao  DateTime?
+
+  compraId      Int      @unique
+  compra        Compra   @relation(fields: [compraId], references: [id])
+
+  userId        Int?
+  user          User?    @relation(fields: [userId], references: [id])
+}
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  name     String?
+  compras  Compra[]
+  pagamentos Pagamento[]
+}
+
+enum StatusPagamento {
+  PENDENTE
+  EXECUTADO
+  CANCELADO
+}
+
+model Carteira {
+  id             Int    @id @default(autoincrement())
+  ticker         String
+  quantidade     Int
+  precoMedio     Float
+  totalInvestido Float
+}
