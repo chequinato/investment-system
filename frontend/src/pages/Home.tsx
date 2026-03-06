@@ -1,6 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import { getToken, removeToken } from '../auth';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 
 const API_URL = 'http://localhost:3000';
 
@@ -12,6 +14,10 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
   const [formPagamento, setFormPagamento] = useState({ compraId: '', valor: '' });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
+  const [filtroTicker, setFiltroTicker] = useState('');
+  const [filtroStatusCompra, setFiltroStatusCompra] = useState('');
+  const [filtroStatusPagamento, setFiltroStatusPagamento] = useState('');
+  const [filtroValor, setFiltroValor] = useState('');
 
   useEffect(() => {
     fetchCompras();
@@ -102,6 +108,14 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
     setLoading(false);
   };
 
+  const dadosGraficos = [
+    { name: 'Total Investido', valor: carteira.reduce((acc, c) => acc + c.totalInvestido, 0) },
+    { name: 'Qtde Ações', valor: carteira.reduce((acc, c) => acc + c.quantidade, 0) },
+    { name: 'Pagamentos Pendentes', valor: pagamentos.filter(p => p.status === 'PENDENTE').length },
+    { name: 'Pagamentos Executados', valor: pagamentos.filter(p => p.status === 'EXECUTADO').reduce((acc, p) => acc + p.valor, 0) },
+    { name: 'Pagamentos Cancelados', valor: pagamentos.filter(p => p.status === 'CANCELADO').reduce((acc, p) => acc + p.valor, 0) },
+  ];
+
   return (
     <div className="container">
       <h1>Investment System</h1>
@@ -122,6 +136,18 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
       {/* 2. Compras Realizadas */}
       <section>
         <h2>2. Compras Realizadas</h2>
+
+        {/* FILTRO COMPRAS */}
+        <div style={{ marginBottom: '10px' }}>
+          <input placeholder="Filtrar por Ticker" value={filtroTicker} onChange={e => setFiltroTicker(e.target.value.toUpperCase())} />
+          <select value={filtroStatusCompra} onChange={e => setFiltroStatusCompra(e.target.value)}>
+            <option value="">Todos Status</option>
+            <option value="PENDENTE">PENDENTE</option>
+            <option value="EXECUTADO">EXECUTADO</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
+
         <table>
           <thead>
             <tr>
@@ -134,27 +160,30 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
             </tr>
           </thead>
           <tbody>
-            {compras.map((c: any) => {
-              const pagamentoExecutado = pagamentos.find((p: any) => p.compraId === c.id && p.status === 'EXECUTADO');
-              return (
-                <tr key={c.id}>
-                  <td>{c.id}</td>
-                  <td>{c.ticker}</td>
-                  <td>{c.quantidade}</td>
-                  <td>{c.precoUnitario}</td>
-                  <td>{c.valorTotal}</td>
-                  <td>
-                    {pagamentoExecutado ? (
-                      <span style={{ color: 'green', fontWeight: 'bold' }}>Finalizado</span>
-                    ) : (
-                      <form onSubmit={e => { e.preventDefault(); setFormPagamento({ compraId: c.id, valor: c.valorTotal }); }}>
-                        <button type="submit" onClick={() => setFormPagamento({ compraId: c.id, valor: c.valorTotal })}>Pagar</button>
-                      </form>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+            {compras
+              .filter(c => (!filtroTicker || c.ticker.includes(filtroTicker)))
+              .filter(c => (!filtroStatusCompra || (pagamentos.find(p => p.compraId === c.id)?.status || 'PENDENTE') === filtroStatusCompra))
+              .map((c: any) => {
+                const pagamentoExecutado = pagamentos.find((p: any) => p.compraId === c.id && p.status === 'EXECUTADO');
+                return (
+                  <tr key={c.id}>
+                    <td>{c.id}</td>
+                    <td>{c.ticker}</td>
+                    <td>{c.quantidade}</td>
+                    <td>{c.precoUnitario}</td>
+                    <td>{c.valorTotal}</td>
+                    <td>
+                      {pagamentoExecutado ? (
+                        <span style={{ color: 'green', fontWeight: 'bold' }}>Finalizado</span>
+                      ) : (
+                        <form onSubmit={e => { e.preventDefault(); setFormPagamento({ compraId: c.id, valor: c.valorTotal }); }}>
+                          <button type="submit" onClick={() => setFormPagamento({ compraId: c.id, valor: c.valorTotal })}>Pagar</button>
+                        </form>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </section>
@@ -172,6 +201,18 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
       {/* 4. Pagamentos */}
       <section>
         <h2>4. Pagamentos</h2>
+
+        {/* FILTRO PAGAMENTOS */}
+        <div style={{ marginBottom: '10px' }}>
+          <select value={filtroStatusPagamento} onChange={e => setFiltroStatusPagamento(e.target.value)}>
+            <option value="">Todos Pagamentos</option>
+            <option value="PENDENTE">PENDENTE</option>
+            <option value="EXECUTADO">EXECUTADO</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+          <input type="number" placeholder="Filtrar por valor >= " value={filtroValor} onChange={e => setFiltroValor(e.target.value)} />
+        </div>
+
         <table>
           <thead>
             <tr>
@@ -185,27 +226,30 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
             </tr>
           </thead>
           <tbody>
-            {pagamentos.map((p: any) => {
-              const compra = compras.find((c: any) => c.id === p.compraId);
-              return (
-                <tr key={p.id}>
-                  <td>{p.id}</td>
-                  <td>{p.compraId}</td>
-                  <td>{p.valor}</td>
-                  <td>{p.status}</td>
-                  <td>{p.dataExecucao ? new Date(p.dataExecucao).toLocaleString() : '-'}</td>
-                  <td>
-                    {p.status === 'PENDENTE' && (
-                      <>
-                        <button onClick={() => processarPagamento(p.id, true)} disabled={loading}>Finalizar</button>
-                        <button onClick={() => processarPagamento(p.id, false)} disabled={loading}>Cancelar</button>
-                      </>
-                    )}
-                  </td>
-                  <td>{compra ? compra.ticker : '-'}</td>
-                </tr>
-              );
-            })}
+            {pagamentos
+              .filter(p => (!filtroStatusPagamento || p.status === filtroStatusPagamento))
+              .filter(p => (!filtroValor || p.valor >= Number(filtroValor)))
+              .map((p: any) => {
+                const compra = compras.find((c: any) => c.id === p.compraId);
+                return (
+                  <tr key={p.id}>
+                    <td>{p.id}</td>
+                    <td>{p.compraId}</td>
+                    <td>{p.valor}</td>
+                    <td>{p.status}</td>
+                    <td>{p.dataExecucao ? new Date(p.dataExecucao).toLocaleString() : '-'}</td>
+                    <td>
+                      {p.status === 'PENDENTE' && (
+                        <>
+                          <button onClick={() => processarPagamento(p.id, true)} disabled={loading}>Finalizar</button>
+                          <button onClick={() => processarPagamento(p.id, false)} disabled={loading}>Cancelar</button>
+                        </>
+                      )}
+                    </td>
+                    <td>{compra ? compra.ticker : '-'}</td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </section>
@@ -233,6 +277,20 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
             ))}
           </tbody>
         </table>
+      </section>
+
+      {/* 6. Estatísticas Gerais */}
+      <section>
+        <h2>6. Estatísticas Gerais (Gráfico)</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={dadosGraficos}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="valor" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
       </section>
     </div>
   );

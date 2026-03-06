@@ -11,7 +11,6 @@
 - [Organização e Planejamento](#organizacao-e-planejamento)
 - [Perguntas para o Cliente](#perguntas-para-o-cliente)
 
----
 
 ## <a name="resumo-do-projeto"></a>Resumo do Projeto
 Este projeto é um sistema interno (backoffice) para registrar compras de ações e processar pagamentos dessas compras, conforme o case técnico do processo seletivo de Estágio em Engenharia de Software do Itaú Unibanco. O sistema foi desenvolvido com foco em clareza, organização, boas práticas e demonstração de raciocínio lógico.
@@ -53,6 +52,11 @@ Relacionamentos:
 - Resumo da carteira do usuário (total investido, quantidade, preço médio por ação)
 - Frontend com telas de login, cadastro, home protegida, formulários e tabelas interativas
 - Filtros: cada usuário só vê e manipula seus próprios dados
+- Filtros avançados:
+	- Compras: filtrar por status e por ticker (nome da compra)
+	- Pagamentos: filtrar por valor e mesclar com status
+- Dashboard com estatísticas principais do sistema
+- Seção de notificações para alertas e atualizações
 
 ## <a name="explicacao-das-camadas"></a>Explicação das Camadas
 - **Models (Prisma)**: Definem as entidades e relacionamentos do banco.
@@ -83,7 +87,6 @@ Relacionamentos:
 4. O usuário pode cadastrar outros tipos de investimento além de ações no futuro?
 5. Há necessidade de relatórios/exportação dos dados?
 
----
 
 ## Observações Finais
 - O projeto foi feito com foco em clareza, segurança e boas práticas.
@@ -91,7 +94,6 @@ Relacionamentos:
 - O frontend é simples, mas cobre todo o fluxo solicitado e pode ser expandido facilmente.
 - O uso de SQLite e Prisma facilita a portabilidade e entendimento da modelagem.
 
----
 
 **Demonstração:**
 - Cadastro/login de usuário
@@ -100,4 +102,3 @@ Relacionamentos:
 - Pagamento processado (EXECUTADO/CANCELADO)
 - Visualização de status, datas e resumo da carteira
 
----
