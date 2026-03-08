@@ -108,18 +108,22 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
     setLoading(false);
   };
 
-  const dadosGraficos = [
+  console.log('PAGAMENTOS:', pagamentos);
+  const dadosInvestimentos = [
     { name: 'Total Investido', valor: carteira.reduce((acc, c) => acc + c.totalInvestido, 0) },
-    { name: 'Qtde Ações', valor: carteira.reduce((acc, c) => acc + c.quantidade, 0) },
-    { name: 'Pagamentos Pendentes', valor: pagamentos.filter(p => p.status === 'PENDENTE').length },
     { name: 'Pagamentos Executados', valor: pagamentos.filter(p => p.status === 'EXECUTADO').reduce((acc, p) => acc + p.valor, 0) },
-    { name: 'Pagamentos Cancelados', valor: pagamentos.filter(p => p.status === 'CANCELADO').reduce((acc, p) => acc + p.valor, 0) },
+    { name: 'Pagamentos Cancelados', valor: pagamentos.filter(p => p.status === 'CANCELADO').reduce((acc, p) => acc + p.valor, 0) }
+  ];
+
+  const dadosEstatisticas = [
+    { name: 'Qtde Ações', valor: carteira.reduce((acc, c) => acc + c.quantidade, 0) },
+    { name: 'Pagamentos Pendentes', valor: pagamentos.filter(p => p.status === 'PENDENTE').reduce((acc, p) => acc + p.valor, 0) }
   ];
 
   return (
     <div className="container">
       <h1>Investment System</h1>
-      <button style={{ float: 'right' }} onClick={() => { removeToken(); onLogout(); }}>Sair</button>
+      <button className='leftbutton' style={{ float: 'right' }} onClick={() => { removeToken(); onLogout(); }}>Sair</button>
       {msg && <div className="msg">{msg}</div>}
 
       {/* 1. Comprar Ação */}
@@ -221,7 +225,7 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
               <th>Valor</th>
               <th>Status</th>
               <th>Data Execução</th>
-              <th>Ações</th>
+              <th>Processar</th>
               <th>Nome Ação</th>
             </tr>
           </thead>
@@ -281,14 +285,25 @@ export default function Home({ onLogout }: { onLogout: () => void }) {
 
       {/* 6. Estatísticas Gerais */}
       <section>
-        <h2>6. Estatísticas Gerais (Gráfico)</h2>
+        <h2>6. Dados Investimentos</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={dadosGraficos}>
+          <BarChart data={dadosInvestimentos}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Legend />
-            <Bar dataKey="valor" fill="#8884d8" />
+            <Bar dataKey="valor" fill="#6366f1" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section>
+        <h2>7. Dados Estatísticas</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={dadosEstatisticas}>
+            <XAxis dataKey="name" interval={0} />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="valor" fill="#22c55e" />
           </BarChart>
         </ResponsiveContainer>
       </section>

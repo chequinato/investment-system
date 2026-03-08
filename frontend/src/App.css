@@ -167,3 +167,10 @@ button:disabled {
   background: #c7d2fe;
   cursor: not-allowed;
 }
+
+.leftbutton{
+    position: absolute; /* Botão absoluto */
+    top: 0;   /* Topo */
+    right: 20px;  /* Esquerda */
+    margin: 30px; /* Opcional: para não colar na borda */
+}
