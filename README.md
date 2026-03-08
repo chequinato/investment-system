@@ -36,9 +36,12 @@ Entidades principais:
 - **Carteira**: id, ticker, quantidade, precoMedio, totalInvestido
 
 Relacionamentos:
-- Um usuário possui várias compras e pagamentos.
-- Uma compra pertence a um usuário e pode ter um pagamento.
-- Um pagamento pertence a uma compra e a um usuário.
+• Um usuário pode possuir várias compras.
+• Uma compra pertence a um único usuário.
+• Um usuário pode possuir vários pagamentos.
+• Um pagamento pertence a um único usuário.
+• Uma compra pode possuir um pagamento associado.
+• Um pagamento pertence a uma única compra.
 
 ## <a name="arquitetura-e-tecnologias"></a>Arquitetura e Tecnologias
 - **Backend**: Node.js, Express, Prisma ORM, SQLite, JWT, bcryptjs
@@ -83,9 +86,8 @@ Relacionamentos:
 ## <a name="perguntas-para-o-cliente"></a>Perguntas para o Cliente
 1. O sistema deve permitir editar ou excluir compras/pagamentos?
 2. Como deve ser tratado um pagamento cancelado: pode ser reprocessado?
-3. É necessário histórico de alterações (auditoria)?
-4. O usuário pode cadastrar outros tipos de investimento além de ações no futuro?
-5. Há necessidade de relatórios/exportação dos dados?
+3. O usuário pode cadastrar outros tipos de investimento além de ações no futuro?
+4. Há necessidade de relatórios/exportação dos dados?
 
 
 ## Observações Finais
