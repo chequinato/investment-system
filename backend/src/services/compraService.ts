@@ -1,6 +1,6 @@
 
 import { prisma } from "../prisma/prismaClient";
-
+import historicoServices = require("./historicoServices");
 
 interface CriarCompraDTO {
   ticker: string;
@@ -9,9 +9,9 @@ interface CriarCompraDTO {
   userId: number;
 }
 
-
 export async function criarCompra(data: CriarCompraDTO) {
   const valorTotal = data.quantidade * data.precoUnitario;
+
   const compra = await prisma.compra.create({
     data: {
       ticker: data.ticker,
@@ -21,9 +21,16 @@ export async function criarCompra(data: CriarCompraDTO) {
       userId: data.userId
     }
   });
+
+  await historicoServices.registrarHistorico({
+    tipo: "COMPRA_CRIADA",
+    descricao: `Compra criada: ${data.ticker} (${data.quantidade} ações)`,
+    userId: data.userId,
+    compraId: compra.id
+  });
+
   return compra;
 }
-
 
 export async function listarCompras(userId: number) {
   return prisma.compra.findMany({
