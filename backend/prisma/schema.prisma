@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
 }
 
 model Compra {
@@ -61,6 +60,8 @@ model Carteira {
   quantidade     Int
   precoMedio     Float
   totalInvestido Float
+  userId         Int
+  user           User   @relation(fields: [userId], references: [id])
 }
 
 model Historico {

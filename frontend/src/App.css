@@ -143,6 +143,8 @@ tr:hover {
   margin-bottom: 1.5rem;
   font-weight: 500;
   text-align: left;
+  display: flex;
+  
 }
 
 /* Ações dos botões dentro da tabela */

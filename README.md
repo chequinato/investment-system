@@ -28,12 +28,20 @@ Este projeto é um sistema interno (backoffice) para registrar compras de açõe
 3. Frontend React com autenticação JWT e navegação protegida.
 4. Código limpo, modular e documentado.
 
+## <a name="perguntas-para-o-cliente"></a>Perguntas para o Cliente
+1. O sistema deve permitir editar ou excluir compras/pagamentos?
+2. Como deve ser tratado um pagamento cancelado: pode ser reprocessado?
+3. O usuário pode cadastrar outros tipos de investimento além de ações no futuro?
+4. Há necessidade de relatórios/exportação dos dados?
+5. Existe limite de valor ou quantidade para uma compra?
+
 ## <a name="modelagem-relacional"></a>Modelagem Relacional
 Entidades principais:
 - **User**: id, email, senha (hash), nome
 - **Compra**: id, ticker, quantidade, preço unitário, valor total, data de criação, userId (FK)
 - **Pagamento**: id, valor, status, dataExecucao, compraId (FK), userId (FK)
 - **Carteira**: id, ticker, quantidade, precoMedio, totalInvestido
+- **Histórico**: id, tipo, descricao, userId, compraid, pagamentoid, createdAt
 
 Relacionamentos:
 • Um usuário pode possuir várias compras.
@@ -43,23 +51,13 @@ Relacionamentos:
 • Uma compra pode possuir um pagamento associado.
 • Um pagamento pertence a uma única compra.
 
+• A Carteira representa um resumo consolidado das compras por ativo
+• O Histórico registra eventos relacionados a usuários, compras e pagamentos
+
 ## <a name="arquitetura-e-tecnologias"></a>Arquitetura e Tecnologias
 - **Backend**: Node.js, Express, Prisma ORM, SQLite, JWT, bcryptjs
 - **Frontend**: React, TypeScript, Vite, React Router DOM
 - **Organização**: Separação clara entre controllers, services, rotas, middleware de autenticação, models Prisma
-
-## <a name="funcionalidades-implementadas"></a>Funcionalidades Implementadas
-- Cadastro e login de usuários com autenticação JWT
-- CRUD de compras de ações (apenas do usuário logado)
-- Registro e processamento de pagamentos (status: PENDENTE, EXECUTADO, CANCELADO)
-- Resumo da carteira do usuário (total investido, quantidade, preço médio por ação)
-- Frontend com telas de login, cadastro, home protegida, formulários e tabelas interativas
-- Filtros: cada usuário só vê e manipula seus próprios dados
-- Filtros avançados:
-	- Compras: filtrar por status e por ticker (nome da compra)
-	- Pagamentos: filtrar por valor e mesclar com status
-- Dashboard com estatísticas principais do sistema
-- Seção de notificações para alertas e atualizações
 
 ## <a name="explicacao-das-camadas"></a>Explicação das Camadas
 - **Models (Prisma)**: Definem as entidades e relacionamentos do banco.
@@ -83,19 +81,24 @@ Relacionamentos:
 - Próximas funcionalidades: testes automatizados, logs detalhados, exportação de relatórios, permissões de acesso.
 - Planejamento: cada nova feature é implementada em branch separada, revisada e testada antes de integrar.
 
-## <a name="perguntas-para-o-cliente"></a>Perguntas para o Cliente
-1. O sistema deve permitir editar ou excluir compras/pagamentos?
-2. Como deve ser tratado um pagamento cancelado: pode ser reprocessado?
-3. O usuário pode cadastrar outros tipos de investimento além de ações no futuro?
-4. Há necessidade de relatórios/exportação dos dados?
-
+## <a name="funcionalidades-implementadas"></a>Funcionalidades Implementadas
+- Cadastro e login de usuários com autenticação JWT
+- CRUD de compras de ações (apenas do usuário logado)
+- Registro e processamento de pagamentos (status: PENDENTE, EXECUTADO, CANCELADO)
+- Resumo da carteira do usuário (total investido, quantidade, preço médio por ação)
+- Frontend com telas de login, cadastro, home protegida, formulários e tabelas interativas
+- Filtros: cada usuário só vê e manipula seus próprios dados
+- Filtros avançados:
+	- Compras: filtrar por status e por ticker (nome da compra)
+	- Pagamentos: filtrar por valor e mesclar com status
+- Dashboard com estatísticas principais do sistema
+- Seção de notificações para alertas e atualizações
 
 ## Observações Finais
 - O projeto foi feito com foco em clareza, segurança e boas práticas.
 - Toda a lógica de negócio está centralizada nos services.
 - O frontend é simples, mas cobre todo o fluxo solicitado e pode ser expandido facilmente.
 - O uso de SQLite e Prisma facilita a portabilidade e entendimento da modelagem.
-
 
 **Demonstração:**
 - Cadastro/login de usuário
